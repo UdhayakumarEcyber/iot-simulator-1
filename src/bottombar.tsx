@@ -6,11 +6,11 @@ export interface IBottomBarProps {
     onSideBarCollapse:(collapsed:boolean) => void;
     collapsed: boolean;
     onActiveSettings:(settingsActived:boolean)=> void;
-    settingsActived:boolean  
-    
+    settingsActived:boolean ;     
+    mqttServerState:string;    
 }
 export interface IBottomBarState {
-   
+       
 }
 
 export class BottomBar extends React.Component<IBottomBarProps,IBottomBarState> {
@@ -19,7 +19,8 @@ export class BottomBar extends React.Component<IBottomBarProps,IBottomBarState> 
         this.state = {           
             collapse: false,          
             settingsActive:false,
-          };       
+            
+          };                 
     }
 
     toggle() {
@@ -29,12 +30,22 @@ export class BottomBar extends React.Component<IBottomBarProps,IBottomBarState> 
     onCallSettings(){
         this.props.onActiveSettings(!this.props.settingsActived);
     }
-
-    render() {
-        
+ 
+    render() {                 
+            let className = 'serve_connection';       
+            if(this.props.mqttServerState == 'online'){
+                className += ' online';  
+            }           
+            else {
+                className += ' offline';
+            }
+       
         return  <div className={classNames('bottombar',{'sidebar-collapsed':this.props.collapsed})} >       
             <div className='sensors-nav'/>           
             <div onClick={this.onCallSettings.bind(this)} className="settings-icon"/>
+            <div className={className}></div>
+
         </div>;
      }
 }
+

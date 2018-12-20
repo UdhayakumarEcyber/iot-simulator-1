@@ -36,6 +36,11 @@ if (args.length > 2 ) {
   }
 }
 
+function notifyMqttSubscribers() {
+  console.log('Notifying subscribers: ', {'connected': !!client ? client.connected : false});
+  CurrentWindow.webContents.send('mqttstatus', {'connected': !!client ? client.connected : false});
+}
+
 let CurrentWindow:BrowserWindow = null;
 function  showDevTools() {
   if (!!CurrentWindow) CurrentWindow.webContents.openDevTools();
@@ -61,11 +66,10 @@ function createWindow () {
    win.webContents.openDevTools()
   }
 
-
 	win.on('closed', () => {
 		win = null
     CurrentWindow = null;
-	});
+  });
   CurrentWindow = win;
   Menu.setApplicationMenu((Menu.buildFromTemplate as any)(template));
  
@@ -91,7 +95,7 @@ let client:mqtt.MqttClient = null;
 let settings:IIotSimulatorSettings = null;
 
 function checkConnection() {
-  //console.log('Checking connnection');
+  console.log('Checking connnection');
   if (settings == null) {
     scheduleConnectionCheck();
     return;    
@@ -120,13 +124,18 @@ function checkConnection() {
   }
   scheduleConnectionCheck();
 }
-function scheduleConnectionCheck() {
-  setTimeout(checkConnection,1000);
+
+export function scheduleConnectionCheck() {
+   setTimeout(() => {
+    checkConnection();
+    notifyMqttSubscribers();
+  },3000);
 }
 
 scheduleConnectionCheck();
+
 ipcMain.on('settings',(eveent:any,arg:IIotSimulatorSettings) => {
-  //console.log('Got settings. Force a refresh');
+  console.log('Got settings. Force a refresh');
   settings = arg;
   client = null;
 });
@@ -140,7 +149,6 @@ ipcMain.on('cov',(event:any,arg:{topic:string,message:any})=>{
     console.log('Publishing error',error);    
   }
 });
-
 
 
 app.on('activate', () => {

@@ -547,7 +547,7 @@ html {
 .iot_header {
   float: left;
   width: 94%;
-  padding: 8px 3%;
+  padding: 6px 3%;
   background: #FAFAFA; }
 
 .iot_header .logo {
@@ -558,7 +558,9 @@ html {
 
 .iot_header .header_m-logo {
   float: right;
-  width: 2.2rem; }
+  width: 2.2rem;     
+  margin-top: 6px;
+}
 
 .iot_header .header_m-logo::after {
   background: url("images/M_logo.svg") no-repeat 0 0; }
@@ -984,5 +986,73 @@ html {
 }
 .device-card .light-sensor .primary-value-box {
   vertical-align: top;
+}
+.topbar-rht{
+  float: right;
+  display: flex;
+}
+.topbar-rht > div{
+  display: inline-block;
+  width: 75px;
+  margin-right: 10px;
+  position: relative;
+}
+.topbar-rht > div .serveData{
+  position: absolute;
+  left: -38px;
+  font-size: 0.8em;
+  font-weight: bold;
+  top: 8px;
+}
+.topbar-rht > div button {
+  border-radius: 20px;
+  background-color: #4e5356;
+  border: none;
+  padding: 8px 0px;
+  width: 100%;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  padding-left: 30px;
+  -webkit-transition: all .4s linear;
+  -moz-transition: all .4s linear;
+  -o-transition: all .4s linear;
+  transition: all .4s linear;
+  transition-timing-function: ease-in-out;
+}
+.topbar-rht > div.sendBtn button {
+  padding-left: 12px;
+}
+.topbar-rht > div .btn-dot{
+  border-radius: 50%;
+  background-color: #000000;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+.topbar-rht > div.sendBtn .btn-dot{  
+  right: 5px;
+  left: unset;
+  background-color: #18a7f7;
+}
+.serve_connection{
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  top: 13px;
+  right: 48px;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.serve_connection.online{
+  background-image: url(images/Connected.svg);
+}
+.serve_connection.offline{
+  background-image: url(images/No_connectivity.svg);
 }
 /*# sourceMappingURL=styles.css.map */

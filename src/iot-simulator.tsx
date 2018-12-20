@@ -10,13 +10,13 @@ import { Settings } from './settings';
 import { SideBar } from './sidebar';
 import { Staging } from './staging';
 import { TopBar } from './topbar';
-
+import { ipcRenderer } from 'electron';
 
 interface IIoTSimulatorProps {
     settingsActived: boolean;   
     onActiveSettings:any;
+    
 }
-
 
 interface IIoTSimulatorState {
     settingsActive: boolean;
@@ -24,8 +24,9 @@ interface IIoTSimulatorState {
     collapse: boolean;
     expandedDevice:IDevice;
     settings:IIotSimulatorSettings;
-   
+    mqttServerState:string;
 }
+
 type DeviceCreator = (props:IDeviceCardProps) => JSX.Element;
 const DeviceCardMap:{[name:string]:[DeviceCreator,string]} = {};
 export function registerDeviceCard(name:string,title:string,f:DeviceCreator) {
@@ -51,6 +52,7 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
             collapse: false,
             expandedDevice:null,
             settingsActive:false,
+            mqttServerState:'offline',
             settings:{
                 host:'',
                 user:'',
@@ -85,7 +87,19 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
                 saveSettings(this.state.settings);
             });
           });
+      
+       ipcRenderer.on('mqttstatus', this.mqttStatusChanged.bind(this));   
     }
+    
+    mqttStatusChanged(event: any, msg: any) {
+        if(!msg.connected) {
+            this.setState({mqttServerState: 'offline'})
+        }
+        else {
+            this.setState({mqttServerState: 'online'})
+        }
+    }
+
     saveSettings() {
         let obj = {settings:this.state.settings,devices:this.state.devices.toJS()};
         console.log('Saving',obj);
@@ -124,6 +138,7 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
 
     }
     addDevice(device:IDevice) {
+        console.log('Server Connected'); 
         this.setState({devices:this.state.devices.push(device)},()=>{
             this.saveSettings();
         });
@@ -136,20 +151,18 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
         }
     }
     
-    render() {
+    render() {      
+
         return <div className='container'>
             <TopBar />
             <SideBar onSideBarCollapse={this.toggle.bind(this)} collapsed={this.state.collapse} onAddDevice={this.addDevice.bind(this)} />
             <Staging onDeviceDeleted={this.removeDevice.bind(this)} expandedDevice={this.state.expandedDevice} collapsed={this.state.collapse} devices={this.state.devices} onDeviceStateChange={this.deviceStateChange.bind(this)} />
-            <BottomBar onSideBarCollapse={this.toggle.bind(this)} collapsed={this.state.collapse} onActiveSettings={this.onCallSettings.bind(this)} settingsActived={this.state.settingsActive} />
+            <BottomBar onSideBarCollapse={this.toggle.bind(this)} collapsed={this.state.collapse} onActiveSettings={this.onCallSettings.bind(this)} settingsActived={this.state.settingsActive} mqttServerState={this.state.mqttServerState}/>
             <Settings onSave={this.onSave.bind(this)}  settings={this.state.settings}  settingsActived={this.state.settingsActive} onClose={this.closeSettings.bind(this)}/>
 
             {/* <div visible={this.state.settings}>
-
                 <Settings steps={Settings} onClose={this.closesettings.bind(this)} />
-
             </div> */}
-
         </div>
     }
 }

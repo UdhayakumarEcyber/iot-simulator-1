@@ -53,7 +53,7 @@ export class LightSensorDevice extends React.Component<ILightSensorProps,{}> {
             className += ' lightoff';
         }
 
-        console.log(className);
+       // console.log(className);
         
         return <div className='light-sensor'>
 
@@ -115,7 +115,7 @@ export class LightSensorDevice extends React.Component<ILightSensorProps,{}> {
     }
     render() {
         
-        console.log(this.props.value);
+      //  console.log(this.props.value);
 
         if (this.props.state === DeviceCardState.expanded) {
             return this.renderExpanded();
@@ -134,7 +134,7 @@ export class LightSensorDevice extends React.Component<ILightSensorProps,{}> {
             className += ' lightoff';
         }
 
-        console.log(className);
+      //  console.log(className);
         
         return <div className='light-sensor'>
 
