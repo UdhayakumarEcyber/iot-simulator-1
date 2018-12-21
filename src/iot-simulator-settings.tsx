@@ -4,4 +4,5 @@ export interface IIotSimulatorSettings {
     password: string;
     topicPrefix: string;
     pollingInterval: string;
+    publishData:boolean;
 }

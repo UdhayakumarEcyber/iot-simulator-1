@@ -14,8 +14,8 @@ import { ipcRenderer } from 'electron';
 
 interface IIoTSimulatorProps {
     settingsActived: boolean;   
-    onActiveSettings:any;
-    
+    onActiveSettings:any;  
+    onDataToggleSettings:any;  
 }
 
 interface IIoTSimulatorState {
@@ -25,6 +25,7 @@ interface IIoTSimulatorState {
     expandedDevice:IDevice;
     settings:IIotSimulatorSettings;
     mqttServerState:string;
+    publishData:boolean;
 }
 
 type DeviceCreator = (props:IDeviceCardProps) => JSX.Element;
@@ -43,22 +44,27 @@ export function createDeviceCard(name:string,props:IDeviceCardProps):JSX.Element
     return DeviceCardMap[name][0](props);
 }
 export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
-    constructor(props:any) {
+     constructor(props:any) {
         super(props);
         this.toggle = this.toggle.bind(this);
         this.onCallSettings = this.onCallSettings.bind(this);
+
+        this.onDataToggle = this.onDataToggle.bind(this);
+
         this.state = {
             devices:List(),
             collapse: false,
             expandedDevice:null,
             settingsActive:false,
             mqttServerState:'offline',
+            publishData:true,
             settings:{
                 host:'',
                 user:'',
                 password:'',
                 topicPrefix:'/iot-simulator',
                 pollingInterval:'2',
+                publishData: true,
             }
           };
 
@@ -75,6 +81,7 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
                 password: data.settings.password || '',
                 topicPrefix: data.settings.topicPrefix || '/iot-simulator',
                 pollingInterval: data.pollingInterval || '2',
+                publishData:  data. publishData || true,
             };
             let loadedDevices = List<IDevice>();
             let savedDevices = data.devices|| [];
@@ -100,6 +107,8 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
         }
     }
 
+  
+
     saveSettings() {
         let obj = {settings:this.state.settings,devices:this.state.devices.toJS()};
         console.log('Saving',obj);
@@ -123,12 +132,30 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
                 password: settings.password,
                 topicPrefix: settings.topicPrefix,
                 pollingInterval:settings.pollingInterval,
+                publishData: settings.publishData
             },
             settingsActive: false
         }, () => {
             this.saveSettings();
             saveSettings(this.state.settings);
         });
+    }
+
+    onDataToggle() {
+        var publishData = !this.state.settings.publishData;
+
+        var settings = {
+            host: this.state.settings.host,
+            user: this.state.settings.user,
+            password: this.state.settings.password,
+            topicPrefix: this.state.settings.topicPrefix,
+            pollingInterval:this.state.settings.pollingInterval,
+            publishData: publishData
+        };
+
+        settings.publishData = publishData;
+
+        this.onSave(settings);
     }
 
     removeDevice(device:IDevice) {
@@ -154,7 +181,7 @@ export class IoTSimulator extends React.Component<{},IIoTSimulatorState> {
     render() {      
 
         return <div className='container'>
-            <TopBar />
+            <TopBar publishData={this.state.publishData} onDataToggleSettings={this.onDataToggle.bind(this)}/>
             <SideBar onSideBarCollapse={this.toggle.bind(this)} collapsed={this.state.collapse} onAddDevice={this.addDevice.bind(this)} />
             <Staging onDeviceDeleted={this.removeDevice.bind(this)} expandedDevice={this.state.expandedDevice} collapsed={this.state.collapse} devices={this.state.devices} onDeviceStateChange={this.deviceStateChange.bind(this)} />
             <BottomBar onSideBarCollapse={this.toggle.bind(this)} collapsed={this.state.collapse} onActiveSettings={this.onCallSettings.bind(this)} settingsActived={this.state.settingsActive} mqttServerState={this.state.mqttServerState}/>

@@ -17,6 +17,7 @@ export function unregisterSensor(sensor:Sensor) {
     }
 }
 let sensorPollingInterval = 2000;
+let publishData = true;
 
 export function saveSettings(settings:IIotSimulatorSettings) {
     ipcRenderer.send('settings',settings);
@@ -25,6 +26,12 @@ export function saveSettings(settings:IIotSimulatorSettings) {
         newInterval = 2;
     }
     sensorPollingInterval = newInterval*1000;
+
+    publishData = settings.publishData;
+
+    if(publishData) {
+        tick();
+    }
 }
 function publish(sensors:Sensor[]) {
     sensors.forEach(s => {
@@ -34,6 +41,9 @@ function publish(sensors:Sensor[]) {
     });
 }
 function tick() {
+    if(!publishData) {
+        return;
+    }
     let toPublish:Sensor[] = [];
     for (let i = 0; i < sensors.length; i++) {
         const sensor = sensors[i][0];
@@ -45,6 +55,7 @@ function tick() {
         toPublish.push(sensor);
     }
     publish(toPublish);
+    console.log("Messagess sent");
     setTimeout(tick,sensorPollingInterval);
 }
-tick();
+//tick();

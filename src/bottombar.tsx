@@ -19,7 +19,6 @@ export class BottomBar extends React.Component<IBottomBarProps,IBottomBarState> 
         this.state = {           
             collapse: false,          
             settingsActive:false,
-            
           };                 
     }
 

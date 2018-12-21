@@ -41,6 +41,8 @@ function notifyMqttSubscribers() {
   CurrentWindow.webContents.send('mqttstatus', {'connected': !!client ? client.connected : false});
 }
 
+
+
 let CurrentWindow:BrowserWindow = null;
 function  showDevTools() {
   if (!!CurrentWindow) CurrentWindow.webContents.openDevTools();
@@ -57,6 +59,7 @@ function about() {
     buttons:['OK']
   });
 }
+
 let win:BrowserWindow;
 function createWindow () {
   win = new BrowserWindow({width: 700, height: 500,titleBarStyle:'default',title:'IoT Simulator'});

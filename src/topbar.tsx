@@ -1,6 +1,7 @@
 import * as React from 'react';
 export interface ITopBarProps {
-   
+    publishData:boolean;
+    onDataToggleSettings:( publishData:boolean) => void;
 }
 export interface ITopBarState {
     isToggleOn:boolean;
@@ -17,14 +18,20 @@ export class TopBar extends React.Component<ITopBarProps,ITopBarState> {
 			return {isToggleOn: !prevState.isToggleOn};
 		});
     }
-    
-    render() {       
+
+
+    onDataToggle() {
+        this.props.onDataToggleSettings(!this.props.publishData);
+    }
+       
+    render() { 
+       
          return (
              <div className="topbar">
                <div className="iot_header">               
                   <div className="logo"></div>
                   <div className="topbar-rht">
-                    <div className={this.state.isToggleOn ? 'offBtn' : 'sendBtn'} >
+                  <div className={this.state.isToggleOn ? 'offBtn' : 'sendBtn'} onClick={this.onDataToggle.bind(this)}>
                     <span className="serveData">DATA</span>  
                         <button onClick={this.handleClick}>
                             {this.state.isToggleOn ? 'OFF' : 'Send'}                           
